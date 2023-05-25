@@ -10,21 +10,25 @@ import css from './ImageGallery.module.css';
 export const ImageGallery = ({ TagsProps }) => {
   const [imageItem, setImageItem] = useState([]);
   const [error, setError] = useState(null);
-  const [status, setStatus] = useState('idle');
+  const [showLoader, setShowLoader] = useState(false);
+  const [button, setButton] = useState(false)
   const [page, setPage] = useState(1);
   const [nextPage, setNextPage] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalImage, setModalImage] = useState('');
 
   useEffect(() => {
-    // if (TagsProps === '') {
-    // //   setStatus('pending');
-    // return;}
-      fetchPhotos(TagsProps)
+    if (TagsProps === '') {      
+    return;
+  }
+    setShowLoader(true);
+    setButton(false);
+
+      fetchPhotos(TagsProps, page)
         .then(({ hits }) => {
           if (hits.length === 0) {
             setImageItem(hits);
-            setStatus('rejected');
+            setShowLoader(true);
             setError(
               alert(
                 'Sorry, there are no images matching your search query. Please try again.'
@@ -32,64 +36,21 @@ export const ImageGallery = ({ TagsProps }) => {
             );
             return;
           }
-          setImageItem(hits);
-          setStatus('resolved');
-          setPage(1);
+          setImageItem(prev => [...prev, ...hits]) ;
+          setButton(true)
         })
         .catch(error => {
           setError(error);
-          setStatus('rejected');
-   })
-  }, [TagsProps]);
+           })
+           .finally(()=> {setShowLoader(false)})
 
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (prevProps.imageTagsProps !== this.props.imageTagsProps) {
-  //     this.setState({ status: 'pending' });
+    
 
-  //     fetchPhotos(this.props.imageTagsProps, 1)
-  //       .then(({ hits }) => {
-  //         if (hits.length === 0) {
-  //           return this.setState({
-  //             imageItem: hits,
-  //             status: 'rejected',
-  //             error: alert(
-  //               'Sorry, there are no images matching your search query. Please try again.'
-  //             ),
-  //           });
-  //         }
-  //         this.setState({
-  //           imageItem: hits,
-  //           status: 'resolved',
-  //           page: 1,
-  //         });
-  //       })
-  //       .catch(error => this.setState({ error, status: 'rejected' }));
-  //   }
+  }, [TagsProps, page]);
 
-  //   if (prevState.page !== this.state.page && this.state.page !== 1) {
-  //     this.setState({ nextPage: true });
-  //     fetchPhotos(this.props.imageTagsProps, this.state.page)
-  //       .then(({ hits }) => {
-  //         if (hits.length === 0) {
-  //           return this.setState({
-  //             imageItem: hits,
-  //             status: 'rejected',
-  //             error: alert(
-  //               'Sorry, there are no images matching your search query. Please try again.'
-  //             ),
-  //           });
-  //         }
-  //         this.setState(prevState => ({
-  //           imageItem: [...prevState.imageItem, ...hits],
-  //           nextPage: false,
-  //           status: 'resolved',
-  //         }));
-  //       })
+  
 
-  //       .catch(error => this.setState({ error, status: 'rejected' }));
-  //   }
-  // }
-
+  
   const openModal = webformatURL => {
     setShowModal(true);
     setModalImage(webformatURL);
@@ -106,37 +67,28 @@ export const ImageGallery = ({ TagsProps }) => {
     // }));
   };
 
-  const onClickLadMore = () => {
+  const showButtonLoadMore = () => {
+    setButton(true);
+  }
+
+
+  const onClickLoadMore = () => {
     setPage(prev => prev + 1);
   };
 
-  // render (
-  // const { imageItem, error, status, showModal, modalImage, nextPage } =
-  //   this.state;
-
-  if (setStatus('idle')) {
-    return <></>;
-  }
-
-  if (setStatus('pending')) {
-    return <SearchLoader />;
-  }
-
-  if (setStatus('rejected')) {
-    return <p>{error}</p>;
-  }
-
-  if (setStatus('resolved')) {
+  
     return (
       <div>
         <ul className={css.ImageGallery}>
           <ImageGalleryItem imageItemProps={imageItem} onImgClick={openModal} />
+          
         </ul>
-        {nextPage ? (
-          <SearchLoader />
-        ) : (
-          <Button onClickBtn={() => onClickLadMore()} />
-        )}
+
+
+        <>
+        {button && (<Button onClickBtn={() => onClickLoadMore()} />)}
+        {showLoader && (<SearchLoader />)}
+        </>
         {showModal && (
           <Modal onClose={togleModal}>
             <img src={modalImage} alt={'webformatURL'} />
@@ -144,8 +96,7 @@ export const ImageGallery = ({ TagsProps }) => {
         )}
       </div>
     );
-  }
-  //}
+  
 };
 
 //----------------------------------3-DZ-----------------------------------------------
