@@ -2,7 +2,7 @@ const stat = {
   url: 'https://pixabay.com/api/?',
   key: '34892278-814f9e10ef5118b0e5ee7c1d3',
 };
-export const fetchPhotos = async (tags, page) => {
+export const fetchImage = async (tags, page) => {
   return await fetch(
     `${stat.url}page=${page}&key=${stat.key}&q=${tags}&image_type=photo&orientation=horizontal&per_page=12`
   ).then(res => {

@@ -1,23 +1,95 @@
 // import React, { Component } from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Searchbar } from './Searchbar/Searchbar';
 import {ImageGallery} from './ImageGallery/ImageGallery';
 
-export const App = () => {
+import ImageGalleryItem from './ImageGalleryItem/ImageGalleryItem';
+import Modal from './Modal/Modal';
+import { fetchImage } from 'API/api';
+import SearchLoader from 'components/Loader/Loader';
+import Button from './Button/Button';
+
+
+
+  export const App = () => {
   const [tags, setTags] = useState('');
   const [imageItem, setImageItem] = useState([]);
   const [page, setPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [modalImage, setModalImage] = useState('');
+  const [error, setError] = useState(null);
+  const [showLoader, setShowLoader] = useState(false);
+  const [button, setButton] = useState(false);
 
-  const handleFormSubmit = (tags, imageItem, page) => {
+  useEffect(() => {
+    if (!tags) {
+      return;
+    }
+    setShowLoader(true);
+    setButton(false);
+
+    fetchImage(tags, page)
+      .then(({ hits }) => {
+        if (hits.length === 0) {
+          setImageItem(hits);
+          setShowLoader(true);
+          setError(error, alert('Sorry, there are no images matching your search query. Please try again.')
+          );
+          return;
+        }
+
+        setImageItem(prev => [...prev, ...hits]);
+        setButton(true);
+   
+       
+      })
+      .catch(error => {
+        setError(error, alert('Error'));
+      })
+      .finally(() => {
+        setShowLoader(false);
+      });
+  }, [tags, page, error]);
+
+  const handleFormSubmit = tags => {
     setTags(tags);
-    setImageItem(imageItem);
-    setPage(page);
+    setImageItem([]);
+    setPage(1);
+   
      };
+
+     const openModal = webformatURL => {
+      setShowModal(true);
+      setModalImage(webformatURL);
+      
+    };
+
+    const togleModal = () => {
+      setShowModal(prev => !prev);
+      
+    };
+
+    const onClickLoadMore = () => {
+      setPage(prev => prev + 1);
+    };
+
+console.log(imageItem.length)
 
   return (
     <div>
       <Searchbar SubmitTagProps={handleFormSubmit} />
-      <ImageGallery TagsProps={tags}></ImageGallery>
+      <ImageGallery TagsProps={tags}>
+      <ImageGalleryItem imageItemProps={imageItem} onImgClick={openModal}></ImageGalleryItem>
+      </ImageGallery>
+      <>
+        {button && (<Button onClickBtn={() => onClickLoadMore()} />)}
+        {showLoader && <SearchLoader />}
+      </>
+      {showModal && (
+        <Modal onClose={togleModal}>
+          <img src={modalImage} alt={'webformatURL'} />
+        </Modal>
+      )}
     </div>
   );
 };
