@@ -11,47 +11,121 @@ export const ImageGallery = ({ TagsProps }) => {
   const [imageItem, setImageItem] = useState([]);
   const [error, setError] = useState(null);
   const [showLoader, setShowLoader] = useState(false);
-  const [button, setButton] = useState(false)
+  const [button, setButton] = useState(false);
   const [page, setPage] = useState(1);
-  // const [nextPage, setNextPage] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalImage, setModalImage] = useState('');
-
+//------------------------------------------------old------------------------------------
   useEffect(() => {
-    if (TagsProps === '') {      
-    return;
-  }
+    if (TagsProps === '') {
+      return;
+    }
     setShowLoader(true);
     setButton(false);
 
-      fetchPhotos(TagsProps, page)
-        .then(({ hits }) => {
-          if (hits.length === 0) {
-            setImageItem(hits);
-            setShowLoader(true);
+    fetchPhotos(TagsProps, page)
+      .then(({ hits }) => {
+        if (hits.length === 0) {
+          setImageItem(hits);
+          setShowLoader(true);
+          setError(
             setError(
               alert(
                 'Sorry, there are no images matching your search query. Please try again.'
               )
-            );
-            return;
-          }
-          setImageItem(prev => [...prev, ...hits]) ;
-          setButton(true);
-          setPage(1);
-        })
-        .catch(error => {
-          setError(error);
-           })
-           .finally(()=> {setShowLoader(false)})
+            )
+          );
+          return;
+        }
 
-    
-
+        setImageItem(prev => [...prev, ...hits]);
+        setButton(true);
+       
+      })
+      .catch(error => {
+        setError(error);
+      })
+      .finally(() => {
+        setShowLoader(false);
+      });
   }, [TagsProps, page]);
 
+  //------------------------------------new------------------------------------------------
+  //------------------------------------tags-----------------------------------------------
+//   useEffect(() => {
+//     if (TagsProps === '') {
+//       return;
+//     }
+//     setShowLoader(true);
+//     setButton(false);
+
+//     fetchPhotos(TagsProps)
+//       .then(({ hits }) => {
+//         if (hits.length === 0) {
+//           setImageItem(hits);
+//           setShowLoader(true);
+//           setError(
+//             setError(
+//               alert(
+//                 'Sorry, there are no images matching your search query. Please try again.'
+//               )
+//             )
+//           );
+//           return;
+//         }
+
+//         setImageItem(hits);
+//         setButton(true)
+        
+       
+//       })
+//       .catch(error => {
+//         setError(error);
+//       })
+//       .finally(() => {
+//         setShowLoader(false);
+//       });
+//   }, [TagsProps]);
+
+// //----------------------------------------page-------------------------
+//   useEffect(() => {
+//     if (setPage(prev => !prev)) {
+//       return;
+//     }
+//     // setShowLoader(true);
+//     // setButton(false);
+
+//     fetchPhotos(TagsProps,page)
+//       .then(({ hits }) => {
+//         if (hits.length === 0) {
+//           setImageItem(hits);
+//           setShowLoader(true);
+//           setError(
+//             setError(
+//               alert(
+//                 'Sorry, there are no images matching your search query. Please try again.'
+//               )
+//             )
+//           );
+//           return;
+//         }
+
+//         setImageItem(prev => [...prev, ...hits]);
+//         setPage(1)
+//         setButton(true);
+       
+//       })
+//       .catch(error => {
+//         setError(error);
+//       })
+//       .finally(() => {
+//         setShowLoader(false);
+//       });
+//   }, [TagsProps,page]);
+
+//-------------------------------------------------------------------------------------------
   
 
-  
   const openModal = webformatURL => {
     setShowModal(true);
     setModalImage(webformatURL);
@@ -68,32 +142,27 @@ export const ImageGallery = ({ TagsProps }) => {
     // }));
   };
 
-  
   const onClickLoadMore = () => {
     setPage(prev => prev + 1);
   };
 
-  
-    return (
-      <div>
-        <ul className={css.ImageGallery}>
-          <ImageGalleryItem imageItemProps={imageItem} onImgClick={openModal} />
-          
-        </ul>
+  return (
+    <div>
+      <ul className={css.ImageGallery}>
+        <ImageGalleryItem imageItemProps={imageItem} onImgClick={openModal} />
+      </ul>
 
-
-        <>
-        {button && (<Button onClickBtn={() => onClickLoadMore()} />)}
-        {showLoader && (<SearchLoader />)}
-        </>
-        {showModal && (
-          <Modal onClose={togleModal}>
-            <img src={modalImage} alt={'webformatURL'} />
-          </Modal>
-        )}
-      </div>
-    );
-  
+      <>
+        {button && <Button onClickBtn={() => onClickLoadMore()} />}
+        {showLoader && <SearchLoader />}
+      </>
+      {showModal && (
+        <Modal onClose={togleModal}>
+          <img src={modalImage} alt={'webformatURL'} />
+        </Modal>
+      )}
+    </div>
+  );
 };
 
 //----------------------------------3-DZ-----------------------------------------------
