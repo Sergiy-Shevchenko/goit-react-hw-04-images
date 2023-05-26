@@ -13,7 +13,7 @@ export const ImageGallery = ({ TagsProps }) => {
   const [showLoader, setShowLoader] = useState(false);
   const [button, setButton] = useState(false)
   const [page, setPage] = useState(1);
-  const [nextPage, setNextPage] = useState(false);
+  // const [nextPage, setNextPage] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [modalImage, setModalImage] = useState('');
 
@@ -37,7 +37,8 @@ export const ImageGallery = ({ TagsProps }) => {
             return;
           }
           setImageItem(prev => [...prev, ...hits]) ;
-          setButton(true)
+          setButton(true);
+          setPage(1);
         })
         .catch(error => {
           setError(error);
@@ -67,11 +68,7 @@ export const ImageGallery = ({ TagsProps }) => {
     // }));
   };
 
-  const showButtonLoadMore = () => {
-    setButton(true);
-  }
-
-
+  
   const onClickLoadMore = () => {
     setPage(prev => prev + 1);
   };
