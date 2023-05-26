@@ -1,17 +1,13 @@
-// import React, { Component } from 'react';
 import { useState, useEffect } from 'react';
+import { fetchImage } from 'API/api';
 import { Searchbar } from './Searchbar/Searchbar';
-import {ImageGallery} from './ImageGallery/ImageGallery';
-
+import { ImageGallery } from './ImageGallery/ImageGallery';
 import ImageGalleryItem from './ImageGalleryItem/ImageGalleryItem';
 import Modal from './Modal/Modal';
-import { fetchImage } from 'API/api';
 import SearchLoader from 'components/Loader/Loader';
 import Button from './Button/Button';
 
-
-
-  export const App = () => {
+export const App = () => {
   const [tags, setTags] = useState('');
   const [imageItem, setImageItem] = useState([]);
   const [page, setPage] = useState(1);
@@ -33,15 +29,17 @@ import Button from './Button/Button';
         if (hits.length === 0) {
           setImageItem(hits);
           setShowLoader(true);
-          setError(error, alert('Sorry, there are no images matching your search query. Please try again.')
+          setError(
+            error,
+            alert(
+              'Sorry, there are no images matching your search query. Please try again.'
+            )
           );
           return;
         }
 
         setImageItem(prev => [...prev, ...hits]);
         setButton(true);
-   
-       
       })
       .catch(error => {
         setError(error, alert('Error'));
@@ -55,34 +53,32 @@ import Button from './Button/Button';
     setTags(tags);
     setImageItem([]);
     setPage(1);
-   
-     };
+  };
 
-     const openModal = webformatURL => {
-      setShowModal(true);
-      setModalImage(webformatURL);
-      
-    };
+  const openModal = webformatURL => {
+    setShowModal(true);
+    setModalImage(webformatURL);
+  };
 
-    const togleModal = () => {
-      setShowModal(prev => !prev);
-      
-    };
+  const togleModal = () => {
+    setShowModal(prev => !prev);
+  };
 
-    const onClickLoadMore = () => {
-      setPage(prev => prev + 1);
-    };
-
-console.log(imageItem.length)
+  const onClickLoadMore = () => {
+    setPage(prev => prev + 1);
+  };
 
   return (
     <div>
       <Searchbar SubmitTagProps={handleFormSubmit} />
       <ImageGallery TagsProps={tags}>
-      <ImageGalleryItem imageItemProps={imageItem} onImgClick={openModal}></ImageGalleryItem>
+        <ImageGalleryItem
+          imageItemProps={imageItem}
+          onImgClick={openModal}
+        ></ImageGalleryItem>
       </ImageGallery>
       <>
-        {button && (<Button onClickBtn={() => onClickLoadMore()} />)}
+        {button && <Button onClickBtn={() => onClickLoadMore()} />}
         {showLoader && <SearchLoader />}
       </>
       {showModal && (
