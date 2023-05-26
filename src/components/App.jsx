@@ -5,10 +5,14 @@ import {ImageGallery} from './ImageGallery/ImageGallery';
 
 export const App = () => {
   const [tags, setTags] = useState('');
+  const [imageItem, setImageItem] = useState([]);
+  const [page, setPage] = useState(1);
 
-  const handleFormSubmit = (tags) => {
+  const handleFormSubmit = (tags, imageItem, page) => {
     setTags(tags);
-  };
+    setImageItem(imageItem);
+    setPage(page);
+     };
 
   return (
     <div>

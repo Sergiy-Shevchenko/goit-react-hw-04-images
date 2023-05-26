@@ -89,7 +89,7 @@ export const ImageGallery = ({ TagsProps }) => {
 
 // //----------------------------------------page-------------------------
 //   useEffect(() => {
-//     if (setPage(prev => !prev)) {
+//     if (TagsProps === '') {
 //       return;
 //     }
 //     // setShowLoader(true);
@@ -124,8 +124,7 @@ export const ImageGallery = ({ TagsProps }) => {
 //   }, [TagsProps,page]);
 
 //-------------------------------------------------------------------------------------------
-  
-
+ 
   const openModal = webformatURL => {
     setShowModal(true);
     setModalImage(webformatURL);
